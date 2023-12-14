@@ -63,8 +63,9 @@ namespace usermanagment.Controllers
 
 
        
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<project>>> Get()
+        [[HttpPost]
+        [Route("project/createproject")]
+        public async Task<ActionResult> CreateProject(createproject createprojects)
         {
             try
             {
