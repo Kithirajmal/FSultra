@@ -79,7 +79,7 @@ namespace usermanagment.Controllers
         }
 
         [HttpPost]
-        [Route("create project")]
+        [Route("createproject")]
 
         public async Task<ActionResult> Createproject(createproject createprojects)
         {
@@ -104,7 +104,7 @@ namespace usermanagment.Controllers
 
                 await _usercontext.SaveChangesAsync();
 
-                return Ok("success");
+                return  new OkObjectResult(createproject);
             }
             catch (Exception ex)
             {
@@ -194,6 +194,7 @@ namespace usermanagment.Controllers
                         doj = x.doj,
                         email = x.email,
                         empId = x.empId,
+                        
                         isAllocated = x.isAllocated,
                         name = x.name,
                         resource = x.resourceallocations.Select(x=> new Resource
@@ -220,7 +221,7 @@ namespace usermanagment.Controllers
         }
 
 
-        [HttpDelete("{id employee}")]
+        [HttpDelete("{empId}")]
         public async Task<ActionResult> Deleteemployee(int id)
         {
             try
@@ -258,8 +259,11 @@ namespace usermanagment.Controllers
             [Required]
             public DateTime doj { get; set; }
 
-            public bool isAllocated { get; set; }  
+            public bool isAllocated { get; set; }
             
+            public string? primarySkillSet { get; set; }
+
+            public string? secondarySkillSet { get; set; }
             public List <Resource> resource { get; set; }
 
         }
@@ -279,7 +283,7 @@ namespace usermanagment.Controllers
         }
 
         [HttpPost]
-        [Route("create employee")]
+        [Route("createEmployee")]
 
         public async Task<ActionResult> Createemployees(Createemployee createemployee)
         {
@@ -297,6 +301,8 @@ namespace usermanagment.Controllers
                     email = createemployee.email,
                     dob = createemployee.dob,
                     doj = createemployee.doj,
+                    primarySkillSet =createemployee.primarySkillSet,
+                    secondarySkillSet =createemployee.secondarySkillSet,
                     isAllocated = createemployee.isAllocated,
                 };
                 if (emp.isAllocated && createemployee.resource != null) 
@@ -330,6 +336,102 @@ namespace usermanagment.Controllers
             }
 
         }
+
+        [HttpPut]
+        [Route("updateEmployee/{id}")]
+        public async Task<ActionResult> UpdateEmployee(int id, Createemployee createemployee)
+            {
+            if (createemployee == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var existingEmployee = await _usercontext.Employees.FindAsync(id);
+
+                if (existingEmployee == null)
+                {
+                    return NotFound($"Employee with ID {id} not found");
+                }
+
+                // Update properties of the existing employee
+                existingEmployee.name = createemployee.name;
+                existingEmployee.email = createemployee.email;
+                existingEmployee.dob = createemployee.dob;
+                existingEmployee.doj = createemployee.doj;
+                existingEmployee.primarySkillSet = createemployee.primarySkillSet;
+                existingEmployee.secondarySkillSet = createemployee.secondarySkillSet;
+                existingEmployee.isAllocated = createemployee.isAllocated;
+
+                // Clear existing resource allocations
+                existingEmployee.resourceallocations.Clear();
+
+                // Add new resource allocations if isAllocated is true
+                if (existingEmployee.isAllocated && createemployee.resource != null)
+                {
+                    foreach (var resource in createemployee.resource)
+                    {
+                        existingEmployee.resourceallocations.Add(new Resourceallocation
+                        {
+                            //employeeid = createemployee.empId,
+                            projectName = resource.projectName,
+                            projectid = resource.projectid,
+                            startdate = resource.startdate,
+                            enddate = resource.enddate,
+                            iscurrent = resource.iscurrent,
+                        });
+                    }
+                }
+
+                await _usercontext.SaveChangesAsync();
+
+                return Ok("success");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        [Route("projecthistroy")]
+
+        public async Task<ActionResult<IEnumerable<project>>> Getprojecthistory()
+        {
+            try
+            {
+                var projects = await _usercontext.Resourceallocations.ToListAsync();
+                return Ok(projects);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        [Route("projecthistory/{projectid}")]
+        public async Task<ActionResult<IEnumerable<project>>> GetProjectHistory(int projectid)
+        {
+            try
+            {
+                var projects = await _usercontext.Resourceallocations
+                    .Where(ra => ra.projectid == projectid)
+                    .Select(ra => ra.projectName) // Assuming Project is the navigation property in Resourceallocation
+                    .Distinct()
+                    .ToListAsync();
+                    
+                return Ok(projects);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+
 
 
 
