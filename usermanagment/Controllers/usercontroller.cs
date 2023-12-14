@@ -6,6 +6,8 @@ using Microsoft.Identity.Client;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.Xml;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using usermanagment.dbcontext;
 using usermanagment.Model;
 
@@ -43,7 +45,7 @@ namespace usermanagment.Controllers
             try
             {
                 var existingUser = await _usercontext.users
-                    .FirstOrDefaultAsync(c => c.Empid == createShopperCommand.Empid && c.Password == createShopperCommand.password);
+                    .FirstOrDefaultAsync(c => c.empId == createShopperCommand.Empid && c.pwd == createShopperCommand.password);
 
                 if (existingUser == null)
                 {
@@ -60,6 +62,7 @@ namespace usermanagment.Controllers
         }
 
 
+       
         [HttpGet]
         public async Task<ActionResult<IEnumerable<project>>> Get()
         {
@@ -74,7 +77,6 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
-
 
         [HttpPost]
         [Route("create project")]
@@ -91,10 +93,10 @@ namespace usermanagment.Controllers
                 var createproject = new project
                 {
                    
-                    Name = createprojects.Name,
-                    Description = createprojects.Description,
+                    name = createprojects.Name,
+                    description = createprojects.Description,
                     technologies = createprojects.technologies,
-                    ProjectId = createprojects.ProjectId,
+                    projectId = createprojects.ProjectId,
 
                 };
 
@@ -161,9 +163,9 @@ namespace usermanagment.Controllers
                 }
 
                 // Update project properties based on the provided command
-                existingProject.Description = updateUserCommand.Description;
+                existingProject.description = updateUserCommand.Description;
                 existingProject.technologies = updateUserCommand.technologies;
-                existingProject.Name = updateUserCommand.Name;
+                existingProject.name = updateUserCommand.Name;
 
                 // No need to create a new UpdateUserCommand, just update the existing project
 
@@ -181,12 +183,45 @@ namespace usermanagment.Controllers
 
         [HttpGet]
         [Route("employee")]
-        public async Task<ActionResult<IEnumerable<Employee>>> Getall()
+        public async Task<ActionResult> Getall()
         {
             try
             {
-                var employees = await _usercontext.Employees.ToListAsync();
-                return Ok(employees);
+                var employeesWithAllocations = await _usercontext.Employees
+                    .Include(e => e.resourceallocations).Select( x=> new Createemployee()
+                    {
+                        dob = x.dob,
+                        doj = x.doj,
+                        email = x.email,
+                        empId = x.empId,
+                        isAllocated = x.isAllocated,
+                        name = x.name,
+                        resource = x.resourceallocations.Select(x=> new Resource
+                        {
+                            employeeid = x.employeeid,
+                            startdate = x.startdate,
+                            enddate = x.enddate,
+                            iscurrent = x.iscurrent,
+                            projectid = x.projectid,
+                            projectName = x.projectName
+
+                        }).ToList()
+
+                    })
+                    .ToListAsync();
+
+                //var jsonOptions = new JsonSerializerOptions
+                //{
+                //    ReferenceHandler = ReferenceHandler.Preserve,
+                //    // Add other options if needed
+                //};
+                //var response = new
+                //{
+                //    Employees = employeesWithAllocations,
+                //    JsonOptions = jsonOptions
+                //};
+
+                return Ok(employeesWithAllocations);
             }
             catch (Exception ex)
             {
@@ -194,6 +229,7 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
 
         [HttpDelete("{id employee}")]
         public async Task<ActionResult> Deleteemployee(int id)
@@ -219,6 +255,93 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
+
+        public class Createemployee
+        {
+            public string empId { get; set; }
+            [Required]
+            public string email { get; set; }
+            [Required]
+            public string name { get; set; }
+            [Required]
+            public DateTime dob { get; set; }
+            [Required]
+            public DateTime doj { get; set; }
+
+            public bool isAllocated { get; set; }  
+            
+            public List <Resource> resource { get; set; }
+
+        }
+
+        public class Resource
+        {
+            public int employeeid { get; set; }
+            public int projectid { get; set; }
+
+            public string projectName { get; set; }
+
+            public bool iscurrent { get; set; }
+
+            public DateTime startdate { get; set; }
+
+            public DateTime enddate { get; set; }
+        }
+
+        [HttpPost]
+        [Route("create employee")]
+
+        public async Task<ActionResult> Createemployees(Createemployee createemployee)
+        {
+
+            if (createemployee == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                var emp = new Employee
+                {
+                    name = createemployee.name, 
+                    empId = createemployee.empId,
+                    email = createemployee.email,
+                    dob = createemployee.dob,
+                    doj = createemployee.doj,
+                    isAllocated = createemployee.isAllocated,
+                };
+                if (emp.isAllocated && createemployee.resource != null) 
+                {
+                    foreach( var resource in createemployee.resource)
+                    {
+                        emp.resourceallocations.Add(new Resourceallocation
+                        {
+                            //employeeid = createemployee.empId,
+                            projectName = resource.projectName,
+                            startdate = resource.startdate,
+                            enddate = resource.enddate,
+                            iscurrent = resource.iscurrent,
+                        });
+                    }
+                    
+
+                }
+
+                _usercontext.Employees.Add(emp); // Assuming projects DbSet is used for projects
+
+                await _usercontext.SaveChangesAsync();
+
+                return Ok("success");
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+
+        }
+
+
 
 
 

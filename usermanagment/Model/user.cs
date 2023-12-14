@@ -8,15 +8,15 @@ namespace usermanagment.Model
         [Key]
         public int Id { get; set; }
         [Required]
-        public  string   Role{ get; set; }
+        public  string   role{ get; set; }
         [Required]
-        public string Name { get; set; }
+        public string name { get; set; }
         [Required]
-        public int  Empid {  get; set; }
+        public int  empId {  get; set; }
         [Required]
-        public string Email { get; set; }
+        public string email { get; set; }
         [Required]
-        public string Password { get; set; }
+        public string pwd { get; set; }
 
     }
 }

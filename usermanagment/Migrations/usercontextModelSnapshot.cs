@@ -30,31 +30,42 @@ namespace usermanagment.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DOB")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DOJ")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
+                    b.Property<string>("currentProject")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("dob")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("doj")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("primaryskill")
+                    b.Property<string>("empId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("secondaryskill")
+                    b.Property<bool>("isAllocated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("primarySkillSet")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("pwd")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("secondarySkillSet")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees");
+                    b.ToTable("Employees", (string)null);
                 });
 
             modelBuilder.Entity("usermanagment.Model.Resourceallocation", b =>
@@ -65,7 +76,7 @@ namespace usermanagment.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<int>("empid")
+                    b.Property<int>("employeeid")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("enddate")
@@ -73,6 +84,10 @@ namespace usermanagment.Migrations
 
                     b.Property<bool>("iscurrent")
                         .HasColumnType("bit");
+
+                    b.Property<string>("projectName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("projectid")
                         .HasColumnType("int");
@@ -82,7 +97,9 @@ namespace usermanagment.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Resourceallocations");
+                    b.HasIndex("employeeid");
+
+                    b.ToTable("Resourceallocations", (string)null);
                 });
 
             modelBuilder.Entity("usermanagment.Model.project", b =>
@@ -93,15 +110,15 @@ namespace usermanagment.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
+                    b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("projectId")
                         .HasColumnType("int");
 
                     b.Property<string>("technologies")
@@ -121,28 +138,44 @@ namespace usermanagment.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Email")
+                    b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Empid")
+                    b.Property<int>("empId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("pwd")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("users");
+                });
+
+            modelBuilder.Entity("usermanagment.Model.Resourceallocation", b =>
+                {
+                    b.HasOne("usermanagment.Model.Employee", "employee")
+                        .WithMany("resourceallocations")
+                        .HasForeignKey("employeeid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("employee");
+                });
+
+            modelBuilder.Entity("usermanagment.Model.Employee", b =>
+                {
+                    b.Navigation("resourceallocations");
                 });
 #pragma warning restore 612, 618
         }
