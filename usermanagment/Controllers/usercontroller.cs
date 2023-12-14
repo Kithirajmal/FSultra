@@ -108,30 +108,12 @@ namespace usermanagment.Controllers
         {
             try
             {
-              
-
                 var projects = await _usercontext.projects.ToListAsync();
 
-               
-                foreach (var project in projects)
-                {
-                    
-                    var technologiesArray = project.technologies.Split(',');
+              
+                return Ok(projects);
 
-                    var resultItem = new createproject
-                    {
-                        Name = project.name,
-                        Description = project.description,
-                        technologies = technologiesArray,
-                        ProjectId = project.projectId,
-                        
-                    };
-                }
-
-                    // Return the array in the response
-                    return Ok(projects);
-
-                //return Ok(projects);
+              
             }
             catch (Exception ex)
             {
@@ -324,36 +306,6 @@ namespace usermanagment.Controllers
             }
             try
             {
-                //if (createemployee.isAllocated == null)
-                //{
-                //    var nonAllocatedEmployee = new NonAllocatedEmployee
-                //    {
-                //        name = createemployee.name,
-                //        empId = createemployee.empId,
-                //        email = createemployee.email,
-                //        dob = createemployee.dob,
-                //        doj = createemployee.doj,
-                //        primarySkillSet = createemployee.primarySkillSet,
-                //        secondarySkillSet = createemployee.secondarySkillSet,
-                        
-                //    };
-                //    _usercontext.nonAllocatedEmployees.Add(nonAllocatedEmployee);
-                //}
-                //else
-                //{
-                //    var allocatedEmployee = new AllocatedEmployee
-                //    {
-                //        name = createemployee.name,
-                //        empId = createemployee.empId,
-                //        email = createemployee.email,
-                //        dob = createemployee.dob,
-                //        doj = createemployee.doj,
-                //        primarySkillSet = createemployee.primarySkillSet,
-                //        secondarySkillSet = createemployee.secondarySkillSet,
-                       
-                //    };
-                //    _usercontext.AllocatedEmployees.Add(allocatedEmployee);
-                //}
 
                     var emp = new Employee
                 {
@@ -366,7 +318,7 @@ namespace usermanagment.Controllers
                     secondarySkillSet =createemployee.secondarySkillSet,
                     isAllocated = createemployee.isAllocated,
                 };
-                if (emp.isAllocated && createemployee.resource != null) 
+                if ( createemployee.resource != null) 
                 {
                     foreach( var resource in createemployee.resource)
                     {
