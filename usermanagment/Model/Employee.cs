@@ -19,9 +19,9 @@ namespace usermanagment.Model
         [Required]
         public string name { get; set; }
         [Required]
-        public DateTime dob { get; set; }
+        public string dob { get; set; }
         [Required]
-        public DateTime doj { get; set; }
+        public string doj { get; set; }
 
 
         public string? pwd { get; set; }

@@ -16,6 +16,10 @@ namespace usermanagment.dbcontext
         public DbSet<Employee> Employees { get; set; }
         public DbSet<project> projects { get; set; }
 
+        //public DbSet<AllocatedEmployee> AllocatedEmployees { get; set; }
+
+        //public DbSet<NonAllocatedEmployee> nonAllocatedEmployees {  get; set; } 
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Employee>(x => x

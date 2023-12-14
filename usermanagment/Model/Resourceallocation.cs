@@ -12,9 +12,9 @@ namespace usermanagment.Model
 
         public  bool iscurrent {  get; set; }
            
-        public DateTime startdate { get; set; }
+        public string startdate { get; set; }
 
-        public DateTime enddate { get; set;}
+        public string enddate { get; set;}
         [NotMapped]
         public virtual Employee employee { get; set; }
 

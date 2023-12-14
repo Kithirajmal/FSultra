@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -20,8 +19,8 @@ namespace usermanagment.Migrations
                     empId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    dob = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    doj = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    dob = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    doj = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     pwd = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     isAllocated = table.Column<bool>(type: "bit", nullable: false),
                     currentProject = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -76,8 +75,8 @@ namespace usermanagment.Migrations
                     projectid = table.Column<int>(type: "int", nullable: false),
                     projectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     iscurrent = table.Column<bool>(type: "bit", nullable: false),
-                    startdate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    enddate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    startdate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    enddate = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

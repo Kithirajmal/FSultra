@@ -77,12 +77,7 @@ namespace usermanagment.Controllers
 
             try
             {
-                //string tech = string.Empty;
-                //foreach (var project in createprojects.technologies)
-                //{
-                //    var pro = project;
-                //    tech += pro+ ",";
-                //}
+               
 
                 var techString = string.Join(",", createprojects.technologies);
 
@@ -107,14 +102,36 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
-
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<project>>> Get()
+        [Route("allproject")]
+        public async Task<ActionResult<IEnumerable<project>>> Getalll()
         {
             try
             {
+              
+
                 var projects = await _usercontext.projects.ToListAsync();
-                return Ok(projects);
+
+               
+                foreach (var project in projects)
+                {
+                    
+                    var technologiesArray = project.technologies.Split(',');
+
+                    var resultItem = new createproject
+                    {
+                        Name = project.name,
+                        Description = project.description,
+                        technologies = technologiesArray,
+                        ProjectId = project.projectId,
+                        
+                    };
+                }
+
+                    // Return the array in the response
+                    return Ok(projects);
+
+                //return Ok(projects);
             }
             catch (Exception ex)
             {
@@ -122,6 +139,7 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
 
 
         [HttpDelete("project/{id}")]
@@ -266,9 +284,9 @@ namespace usermanagment.Controllers
             [Required]
             public string name { get; set; }
             [Required]
-            public DateTime dob { get; set; }
+            public string dob { get; set; }
             [Required]
-            public DateTime doj { get; set; }
+            public string doj { get; set; }
 
             public bool isAllocated { get; set; }
             
@@ -289,9 +307,9 @@ namespace usermanagment.Controllers
 
             public bool iscurrent { get; set; }
 
-            public DateTime startdate { get; set; }
+            public string startdate { get; set; }
 
-            public DateTime enddate { get; set; }
+            public string enddate { get; set; }
         }
 
         [HttpPost]
@@ -306,7 +324,38 @@ namespace usermanagment.Controllers
             }
             try
             {
-                var emp = new Employee
+                //if (createemployee.isAllocated == null)
+                //{
+                //    var nonAllocatedEmployee = new NonAllocatedEmployee
+                //    {
+                //        name = createemployee.name,
+                //        empId = createemployee.empId,
+                //        email = createemployee.email,
+                //        dob = createemployee.dob,
+                //        doj = createemployee.doj,
+                //        primarySkillSet = createemployee.primarySkillSet,
+                //        secondarySkillSet = createemployee.secondarySkillSet,
+                        
+                //    };
+                //    _usercontext.nonAllocatedEmployees.Add(nonAllocatedEmployee);
+                //}
+                //else
+                //{
+                //    var allocatedEmployee = new AllocatedEmployee
+                //    {
+                //        name = createemployee.name,
+                //        empId = createemployee.empId,
+                //        email = createemployee.email,
+                //        dob = createemployee.dob,
+                //        doj = createemployee.doj,
+                //        primarySkillSet = createemployee.primarySkillSet,
+                //        secondarySkillSet = createemployee.secondarySkillSet,
+                       
+                //    };
+                //    _usercontext.AllocatedEmployees.Add(allocatedEmployee);
+                //}
+
+                    var emp = new Employee
                 {
                     name = createemployee.name, 
                     empId = createemployee.empId,
@@ -331,6 +380,7 @@ namespace usermanagment.Controllers
                             iscurrent = resource.iscurrent,
                         });
                     }
+
                     
 
                 }
@@ -443,6 +493,24 @@ namespace usermanagment.Controllers
             }
         }
 
+
+        //[HttpGet]
+        //[Route("Allocated")]
+
+        //public async Task<ActionResult> GetallocatedResourse()
+        //{
+        //    var existingCorporate = await _usercontext.Employees.Where(c => c.isAllocated).ToListAsync();
+        //    if (existingCorporate == null)
+        //    {
+                
+
+        //    }
+
+          
+        //        return Ok();
+        //    }
+        
+        
 
 
 
