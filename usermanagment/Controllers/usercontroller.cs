@@ -210,17 +210,6 @@ namespace usermanagment.Controllers
                     })
                     .ToListAsync();
 
-                //var jsonOptions = new JsonSerializerOptions
-                //{
-                //    ReferenceHandler = ReferenceHandler.Preserve,
-                //    // Add other options if needed
-                //};
-                //var response = new
-                //{
-                //    Employees = employeesWithAllocations,
-                //    JsonOptions = jsonOptions
-                //};
-
                 return Ok(employeesWithAllocations);
             }
             catch (Exception ex)
@@ -318,6 +307,7 @@ namespace usermanagment.Controllers
                         {
                             //employeeid = createemployee.empId,
                             projectName = resource.projectName,
+                            projectid = resource.projectid,
                             startdate = resource.startdate,
                             enddate = resource.enddate,
                             iscurrent = resource.iscurrent,
