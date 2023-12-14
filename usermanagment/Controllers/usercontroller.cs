@@ -10,12 +10,13 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using usermanagment.dbcontext;
 using usermanagment.Model;
+using static usermanagment.Controllers.usercontroller;
 
 namespace usermanagment.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api")]
     public class usercontroller : ControllerBase
     {
         private readonly usercontext _usercontext;
@@ -26,20 +27,11 @@ namespace usermanagment.Controllers
         }
 
         public record CreateShopperCommand(int Empid, string password);
-        public class createproject
-        {
-            [Required]
-            public int ProjectId { get; set; }
-           
-            [Required]
-            public string Name { get; set; }
-            [Required]
-            public string Description { get; set; }
-            [Required]
-            public string technologies { get; set; }
-        }
+      
+     
 
         [HttpPost]
+        [Route("user")]
         public async Task<ActionResult> CheckUser(CreateShopperCommand createShopperCommand)
         {
             try
@@ -60,12 +52,64 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+        public class createproject
+        {
+            [Required]
+            public int ProjectId { get; set; }
+
+            [Required]
+            public string Name { get; set; }
+            [Required]
+            public string Description { get; set; }
+            [Required]
+            public  string[] technologies { get; set; }
+        }
 
 
-       
-        [[HttpPost]
+        [HttpPost]
         [Route("project/createproject")]
         public async Task<ActionResult> CreateProject(createproject createprojects)
+        {
+            if (createprojects == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                //string tech = string.Empty;
+                //foreach (var project in createprojects.technologies)
+                //{
+                //    var pro = project;
+                //    tech += pro+ ",";
+                //}
+
+                var techString = string.Join(",", createprojects.technologies);
+
+
+                var createproject = new project
+                {
+                    name = createprojects.Name,
+                    description = createprojects.Description,
+                    technologies = techString,
+                    projectId = createprojects.ProjectId,
+                };
+
+                _usercontext.projects.Add(createproject);
+
+                await _usercontext.SaveChangesAsync();
+
+                
+                return new OkObjectResult(createproject);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<project>>> Get()
         {
             try
             {
@@ -79,43 +123,8 @@ namespace usermanagment.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("createproject")]
 
-        public async Task<ActionResult> Createproject(createproject createprojects)
-        {
-
-            if (createprojects == null)
-            {
-                return NotFound();
-            }
-            try
-            {
-                var createproject = new project
-                {
-                   
-                    name = createprojects.Name,
-                    description = createprojects.Description,
-                    technologies = createprojects.technologies,
-                    projectId = createprojects.ProjectId,
-
-                };
-
-                _usercontext.projects.Add(createproject); // Assuming projects DbSet is used for projects
-
-                await _usercontext.SaveChangesAsync();
-
-                return  new OkObjectResult(createproject);
-            }
-            catch (Exception ex)
-            {
-
-                return StatusCode(500, $"Internal Server Error: {ex.Message}");
-            }
-
-        }
-
-        [HttpDelete("{id}")]
+        [HttpDelete("project/{id}")]
         public async Task<ActionResult> DeleteProject(int id)
         {
             try
@@ -151,7 +160,7 @@ namespace usermanagment.Controllers
 
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("project/{id}")]
         public async Task<ActionResult> UpdateUser(int id, UpdateUserCommand updateUserCommand)
         {
             try
@@ -183,7 +192,7 @@ namespace usermanagment.Controllers
 
 
         [HttpGet]
-        [Route("employee")]
+        [Route("allemployee")]
         public async Task<ActionResult> Getall()
         {
             try
@@ -222,7 +231,8 @@ namespace usermanagment.Controllers
         }
 
 
-        [HttpDelete("{empId}")]
+        [HttpDelete]
+        [Route("employee/{empId}")]
         public async Task<ActionResult> Deleteemployee(int id)
         {
             try
@@ -268,6 +278,7 @@ namespace usermanagment.Controllers
             public List <Resource> resource { get; set; }
 
         }
+       
 
         public class Resource
         {
@@ -284,7 +295,7 @@ namespace usermanagment.Controllers
         }
 
         [HttpPost]
-        [Route("createEmployee")]
+        [Route("employee/createEmployee")]
 
         public async Task<ActionResult> Createemployees(Createemployee createemployee)
         {
