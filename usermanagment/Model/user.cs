@@ -12,7 +12,7 @@ namespace usermanagment.Model
         [Required]
         public string name { get; set; }
         [Required]
-        public int  empId {  get; set; }
+        public string  empId {  get; set; }
         [Required]
         public string email { get; set; }
         [Required]

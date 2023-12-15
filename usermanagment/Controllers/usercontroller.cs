@@ -26,14 +26,14 @@ namespace usermanagment.Controllers
             _usercontext = usercontext;
         }
 
-        public record CreateShopperCommand(int Empid, string password);
+        public record CreateShopperCommand(string Empid, string password);
       
      
 
         [HttpPost]
         [Route("user")]
         public async Task<ActionResult> CheckUser(CreateShopperCommand createShopperCommand)
-        {
+            {
             try
             {
                 var existingUser = await _usercontext.users
@@ -209,7 +209,7 @@ namespace usermanagment.Controllers
                         name = x.name,
                         resource = x.resourceallocations.Select(x=> new Resource
                         {
-                            employeeid = x.employeeid,
+                            
                             startdate = x.startdate,
                             enddate = x.enddate,
                             iscurrent = x.iscurrent,
@@ -269,6 +269,11 @@ namespace usermanagment.Controllers
             public string dob { get; set; }
             [Required]
             public string doj { get; set; }
+            public string? team { get; set; }
+
+            public string? designation { get; set; }
+
+            public string? reportingManager { get; set; }
 
             public bool isAllocated { get; set; }
             
@@ -282,7 +287,7 @@ namespace usermanagment.Controllers
 
         public class Resource
         {
-            public int employeeid { get; set; }
+           
             public int projectid { get; set; }
 
             public string projectName { get; set; }
@@ -293,6 +298,22 @@ namespace usermanagment.Controllers
 
             public string enddate { get; set; }
         }
+        public class createuser
+        {
+            [Key]
+            public int Id { get; set; }
+            
+            public string role { get; set; }
+         
+            public string name { get; set; }
+            
+            public string empId { get; set; }
+           
+            public string email { get; set; }
+            
+            public string pwd { get; set; }
+        }
+
 
         [HttpPost]
         [Route("employee/createEmployee")]
@@ -304,6 +325,18 @@ namespace usermanagment.Controllers
             {
                 return NotFound();
             }
+
+            var creatusers = new user
+            {
+                name = createemployee.name,
+                email = createemployee.email,
+
+                empId = createemployee.empId,
+                pwd = createemployee.dob,
+                role = "user"
+            };
+            _usercontext.users.Add(creatusers);
+            await _usercontext.SaveChangesAsync();
             try
             {
 
@@ -314,6 +347,9 @@ namespace usermanagment.Controllers
                     email = createemployee.email,
                     dob = createemployee.dob,
                     doj = createemployee.doj,
+                    designation = createemployee.designation,
+                    team = createemployee.team,
+                    reportingManager = createemployee.reportingManager,
                     primarySkillSet =createemployee.primarySkillSet,
                     secondarySkillSet =createemployee.secondarySkillSet,
                     isAllocated = createemployee.isAllocated,
@@ -324,7 +360,7 @@ namespace usermanagment.Controllers
                     {
                         emp.resourceallocations.Add(new Resourceallocation
                         {
-                            //employeeid = createemployee.empId,
+                            
                             projectName = resource.projectName,
                             projectid = resource.projectid,
                             startdate = resource.startdate,
@@ -351,9 +387,11 @@ namespace usermanagment.Controllers
 
         }
 
+
+
         [HttpPut]
-        [Route("updateEmployee/{id}")]
-        public async Task<ActionResult> UpdateEmployee(int id, Createemployee createemployee)
+        [Route("updateEmployee/{empId}")]
+        public async Task<ActionResult> UpdateEmployee( string empId, Createemployee createemployee)
             {
             if (createemployee == null)
             {
@@ -362,11 +400,11 @@ namespace usermanagment.Controllers
 
             try
             {
-                var existingEmployee = await _usercontext.Employees.FindAsync(id);
+                var existingEmployee = await _usercontext.Employees.FirstOrDefaultAsync(x=>x.empId == empId);
 
                 if (existingEmployee == null)
                 {
-                    return NotFound($"Employee with ID {id} not found");
+                    return NotFound($"Employee with ID {empId} not found");
                 }
 
                 // Update properties of the existing employee
@@ -444,31 +482,7 @@ namespace usermanagment.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+       
 
-
-        //[HttpGet]
-        //[Route("Allocated")]
-
-        //public async Task<ActionResult> GetallocatedResourse()
-        //{
-        //    var existingCorporate = await _usercontext.Employees.Where(c => c.isAllocated).ToListAsync();
-        //    if (existingCorporate == null)
-        //    {
-                
-
-        //    }
-
-          
-        //        return Ok();
-        //    }
-        
-        
-
-
-
-
-
-
-
-    }
+        }
 }

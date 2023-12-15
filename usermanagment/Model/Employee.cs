@@ -25,6 +25,12 @@ namespace usermanagment.Model
 
 
         public string? pwd { get; set; }
+        
+        public string? team { get; set; }
+
+        public string? designation { get; set; }
+
+        public string? reportingManager { get; set; }
 
         public bool isAllocated { get; set; }
         public string? currentProject { get; set; }
