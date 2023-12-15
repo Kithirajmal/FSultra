@@ -204,12 +204,18 @@ namespace usermanagment.Controllers
                         doj = x.doj,
                         email = x.email,
                         empId = x.empId,
+                        secondarySkillSet = x.secondarySkillSet,
+                        currentProject = x.currentProject,
+                        primarySkillSet = x.primarySkillSet,
+                        designation = x.designation,
+                        reportingManager = x.currentProject,
+                        team = x.team,
                         
                         isAllocated = x.isAllocated,
                         name = x.name,
                         resource = x.resourceallocations.Select(x=> new Resource
                         {
-                            
+                            empId = x.empId,
                             startdate = x.startdate,
                             enddate = x.enddate,
                             iscurrent = x.iscurrent,
@@ -290,7 +296,7 @@ namespace usermanagment.Controllers
 
         public class Resource
         {
-           
+           public string empId { get; set; }
             public string projectid { get; set; }
 
             public string projectName { get; set; }
@@ -365,7 +371,7 @@ namespace usermanagment.Controllers
                     {
                         emp.resourceallocations.Add(new Resourceallocation
                         {
-                            
+                            empId = resource.empId,
                             projectName = resource.projectName,
                             projectid = resource.projectid,
                             startdate = resource.startdate,

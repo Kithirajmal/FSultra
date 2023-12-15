@@ -12,6 +12,8 @@ namespace usermanagment.Model
         public string projectName { get; set; }
 
         public  bool iscurrent {  get; set; }
+
+        public string empId { get; set; }
            
         public string startdate { get; set; }
 

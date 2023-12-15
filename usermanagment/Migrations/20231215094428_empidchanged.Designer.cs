@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using usermanagment.dbcontext;
 
@@ -10,9 +11,11 @@ using usermanagment.dbcontext;
 namespace usermanagment.Migrations
 {
     [DbContext(typeof(usercontext))]
-    partial class usercontextModelSnapshot : ModelSnapshot
+    [Migration("20231215094428_empidchanged")]
+    partial class empidchanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
