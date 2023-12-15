@@ -55,7 +55,7 @@ namespace usermanagment.Controllers
         public class createproject
         {
             [Required]
-            public int ProjectId { get; set; }
+            public string ProjectId { get; set; }
 
             [Required]
             public string Name { get; set; }
@@ -273,6 +273,9 @@ namespace usermanagment.Controllers
 
             public string? designation { get; set; }
 
+           
+
+            public string? currentProject { get; set; }
             public string? reportingManager { get; set; }
 
             public bool isAllocated { get; set; }
@@ -288,7 +291,7 @@ namespace usermanagment.Controllers
         public class Resource
         {
            
-            public int projectid { get; set; }
+            public string projectid { get; set; }
 
             public string projectName { get; set; }
 
@@ -349,6 +352,8 @@ namespace usermanagment.Controllers
                     doj = createemployee.doj,
                     designation = createemployee.designation,
                     team = createemployee.team,
+                    currentProject = createemployee.currentProject,
+                    pwd = createemployee.dob,
                     reportingManager = createemployee.reportingManager,
                     primarySkillSet =createemployee.primarySkillSet,
                     secondarySkillSet =createemployee.secondarySkillSet,
@@ -464,7 +469,7 @@ namespace usermanagment.Controllers
         }
         [HttpGet]
         [Route("projecthistory/{projectid}")]
-        public async Task<ActionResult<IEnumerable<project>>> GetProjectHistory(int projectid)
+        public async Task<ActionResult<IEnumerable<project>>> GetProjectHistory(string projectid)
         {
             try
             {

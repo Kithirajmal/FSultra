@@ -8,7 +8,7 @@ namespace usermanagment.Model
         [Key]
         public int Id { get; set; }
         [Required]
-        public int projectId { get; set; }
+        public string projectId { get; set; }
         [Required]
         public string? name { get; set; }
         [Required]

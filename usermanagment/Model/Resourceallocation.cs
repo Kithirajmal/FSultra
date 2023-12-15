@@ -7,7 +7,7 @@ namespace usermanagment.Model
         public int id { get; set; }
         public int employeeid { get; set; }
 
-        public int projectid { get; set; }
+        public string projectid { get; set; }
 
         public string projectName { get; set; }
 
